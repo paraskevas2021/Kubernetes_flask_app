@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: app-stateful
+  labels:
+    app: server-stateful
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: web-stateful
+  serviceName: headless-svc-stateful
+  template:
+    metadata:
+      labels:
+        app: web-stateful
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:alpine
+        ports:
+        - containerPort: 80

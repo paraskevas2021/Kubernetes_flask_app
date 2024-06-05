@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flask
+  namespace: default
+  labels:
+    app: flask
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: flask
+  template:
+    metadata:
+      labels:
+        app: flask
+    spec:
+      containers:
+      - name: flask
+        image: my-flask-app
+        imagePullPolicy: Never
+        ports:
+          - containerPort: 4000
+        command: ["sh", "-c", "flask db upgrade --url postgresql://mudasir:12345@postgres-service:5432/demo_db && gunicorn --bind 0.0.0.0:4000 app:app"]
+      initContainers:
+      - name: wait-for-postgres
+        image: busybox
+        command: ['sh', '-c', 'until nslookup postgres-service; do echo waiting for postgres; sleep 2; done;']
